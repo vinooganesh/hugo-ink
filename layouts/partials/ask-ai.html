@@ -1,0 +1,29 @@
+{{- $tools := site.Params.askAI }} {{- if not $tools }} {{- $tools = slice (dict
+"name" "Claude" "url" "https://claude.ai/new") (dict "name" "ChatGPT" "url"
+"https://chatgpt.com/") (dict "name" "Perplexity" "url"
+"https://perplexity.ai/search?q=PROMPT") }} {{- end }}
+
+<div class="ask-ai">
+    <p class="ask-ai-label">
+        {{ i18n "ask_ai_label" | default "Ask AI about this site" }}
+    </p>
+    <div class="ask-ai-buttons">
+        {{- range $tools }}
+        <button
+            class="ask-ai-btn"
+            data-name="{{ .name }}"
+            data-url="{{ .url }}"
+        >
+            {{ .name }}
+        </button>
+        {{- end }}
+    </div>
+    <span id="ask-ai-prompt" hidden
+        >I'm looking at {{ site.Title }} ({{ site.BaseURL | strings.TrimSuffix
+        "/" }}). {{ site.Params.description }} Here's the site's content index
+        for context: {{ site.BaseURL | strings.TrimSuffix "/" }}/llms.txt {{ if
+        and .IsPage (not .IsHome) }} I'm currently reading "{{ .Title }}" at {{
+        .Permalink }} {{ end }} What can you tell me about this site and its
+        content?</span
+    >
+</div>

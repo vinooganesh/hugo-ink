@@ -1,0 +1,8 @@
+<span class="post-meta">
+  {{- if not .Date.IsZero }}
+  <span><time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "January 2, 2006" }}</time></span>
+  {{- end }}
+  {{- if gt .ReadingTime 0 }}
+  <span>{{ i18n "min_read" .ReadingTime | default (printf "%d min read" .ReadingTime) }}</span>
+  {{- end }}
+</span>

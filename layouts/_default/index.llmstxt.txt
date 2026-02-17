@@ -1,0 +1,35 @@
+{{- /* Recursive section printer */ -}}
+{{- define "llms_section" -}}
+{{- $section := .section -}}
+{{- $depth := .depth -}}
+{{- if or (gt (len $section.RegularPages) 0) (gt (len $section.Sections) 0) -}}
+{{- $hashes := strings.Repeat (add $depth 1) "#" }}
+
+{{ printf "%s %s" $hashes $section.Title }}
+
+{{- range $p := $section.RegularPages }}
+{{- if not $p.Params.hidden }}
+- [{{ $p.Title }}]({{ $p.Permalink }}){{ with $p.Description }}: {{ . }}{{ end }}
+{{- end -}}
+{{- end -}}
+
+{{- range $s := $section.Sections -}}
+{{- template "llms_section" (dict "section" $s "depth" (add $depth 1)) -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+
+# {{ site.Title }}
+
+> {{ site.Params.description }}
+
+{{- $orphans := where site.RegularPages "Section" "" }}
+{{- range $p := $orphans }}
+{{- if and (not $p.Params.hidden) (not $p.IsHome) }}
+- [{{ $p.Title }}]({{ $p.Permalink }}){{ with $p.Description }}: {{ . }}{{ end }}
+{{- end -}}
+{{- end -}}
+
+{{- range site.Sections -}}
+{{- template "llms_section" (dict "section" . "depth" 1) -}}
+{{- end }}

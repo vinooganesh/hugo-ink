@@ -1,0 +1,28 @@
+# Hugo build output
+public/
+exampleSite/public/
+exampleSite/themes/
+resources/_gen/
+exampleSite/resources/_gen/
+
+# Hugo lock file
+.hugo_build.lock
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Hugo module vendoring
+_vendor/
+
+# Claude Code
+.claude/

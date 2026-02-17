@@ -1,0 +1,176 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="generator" content="Hugo {{ hugo.Version }}">
+
+{{- $title := .Title }}
+{{- if .IsHome }}
+  {{- $title = site.Title }}
+{{- else }}
+  {{- $title = printf "%s | %s" .Title site.Title }}
+{{- end }}
+<title>{{ $title }}</title>
+
+{{- with .Description | default site.Params.description }}
+<meta name="description" content="{{ . }}">
+{{- end }}
+
+{{/* Canonical URL */}}
+<link rel="canonical" href="{{ .Permalink }}">
+
+{{/* Robots */}}
+{{- if or .Params.draft (not hugo.IsProduction) }}
+<meta name="robots" content="noindex, nofollow">
+{{- end }}
+
+{{/* Preload critical font */}}
+<link rel="preload" href="{{ "fonts/inter-latin-400.woff2" | relURL }}" as="font" type="font/woff2" crossorigin>
+
+{{/* CSS — minified and fingerprinted */}}
+{{- $css := resources.Get "css/main.css" | minify | fingerprint }}
+<link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}">
+
+{{/* Flash-free theme initialization — runs before first paint */}}
+<script>
+  (function() {
+    var saved = localStorage.getItem('theme');
+    if (saved === 'dark' || saved === 'light') {
+      document.documentElement.dataset.theme = saved;
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      document.documentElement.dataset.theme = 'dark';
+    }
+  })();
+</script>
+
+{{/* Noscript fallback for dark mode */}}
+<noscript>
+  <style>
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #1c1917;
+        --text: #fafaf9;
+        --text-secondary: #a8a29e;
+        --link: #60a5fa;
+        --link-hover: #93bbfd;
+        --border: #44403c;
+        --code-bg: #292524;
+        --code-text: #d6d3d1;
+        --code-block-bg: #292524;
+        --code-block-text: #d6d3d1;
+        --tag-bg: #292524;
+        --tag-text: #d6d3d1;
+        --blockquote-border: #57534e;
+        --selection-bg: #60a5fa;
+        --selection-text: #1c1917;
+        --hover-bg: #292524;
+        --accent: #60a5fa;
+        color-scheme: dark;
+      }
+    }
+  </style>
+</noscript>
+
+{{/* Open Graph */}}
+<meta property="og:title" content="{{ $title }}">
+<meta property="og:url" content="{{ .Permalink }}">
+<meta property="og:site_name" content="{{ site.Title }}">
+{{- with .Description | default site.Params.description }}
+<meta property="og:description" content="{{ . }}">
+{{- end }}
+{{- if and .IsPage .Section }}
+<meta property="og:type" content="article">
+  {{- with .Date }}
+<meta property="article:published_time" content="{{ .Format "2006-01-02T15:04:05Z07:00" }}">
+  {{- end }}
+  {{- with .Lastmod }}
+<meta property="article:modified_time" content="{{ .Format "2006-01-02T15:04:05Z07:00" }}">
+  {{- end }}
+  {{- with .Params.tags }}
+    {{- range . }}
+<meta property="article:tag" content="{{ . }}">
+    {{- end }}
+  {{- end }}
+  {{- with .Section }}
+<meta property="article:section" content="{{ . }}">
+  {{- end }}
+{{- else }}
+<meta property="og:type" content="website">
+{{- end }}
+{{- with .Params.cover }}
+<meta property="og:image" content="{{ . | absURL }}">
+{{- end }}
+
+{{/* Twitter Cards */}}
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="{{ $title }}">
+{{- with .Description | default site.Params.description }}
+<meta name="twitter:description" content="{{ . }}">
+{{- end }}
+{{- with .Params.cover }}
+<meta name="twitter:image" content="{{ . | absURL }}">
+{{- end }}
+
+{{/* JSON-LD Structured Data */}}
+{{- if .IsHome }}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": {{ site.Title }},
+  "url": {{ site.BaseURL }}{{ with site.Params.description }},
+  "description": {{ . }}{{ end }}
+}
+</script>
+{{- else if .IsPage }}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "{{ if .Section }}Article{{ else }}WebPage{{ end }}",
+  "headline": {{ .Title }},
+  "url": {{ .Permalink }}{{ if not .Date.IsZero }},
+  "datePublished": "{{ .Date.Format "2006-01-02T15:04:05Z07:00" }}",
+  "dateModified": "{{ .Lastmod.Format "2006-01-02T15:04:05Z07:00" }}"{{ end }}{{ with .Description }},
+  "description": {{ . }}{{ end }}{{ with site.Params.author }},
+  "author": {
+    "@type": "Person",
+    "name": {{ . }}
+  }{{ end }},
+  "publisher": {
+    "@type": "Organization",
+    "name": {{ site.Title }}
+  }{{ if .Section }},
+  "wordCount": {{ .WordCount }}{{ with .Params.tags }},
+  "keywords": [{{ range $i, $t := . }}{{ if $i }}, {{ end }}{{ $t }}{{ end }}]{{ end }}{{ end }}
+}
+</script>
+{{- end }}
+
+{{/* Search JS — only on search page */}}
+{{- if eq .Layout "search" -}}
+<link crossorigin="anonymous" rel="preload" as="fetch" href="../index.json">
+{{- $fusejs := resources.Get "js/fuse.basic.min.js" }}
+{{- $searchjs := resources.Get "js/search.js" | minify }}
+{{- $search := (slice $fusejs $searchjs) | resources.Concat "assets/js/search.js" | fingerprint }}
+<script defer crossorigin="anonymous" src="{{ $search.RelPermalink }}" integrity="{{ $search.Data.Integrity }}"></script>
+{{- end }}
+
+{{/* RSS */}}
+{{- with .OutputFormats.Get "rss" }}
+<link rel="alternate" type="application/rss+xml" title="{{ site.Title }}" href="{{ .Permalink }}">
+{{- end }}
+
+{{/* Pagination rel links for SEO */}}
+{{- if and .IsNode (not .IsHome) }}
+  {{- if gt .Paginator.TotalPages 1 }}
+    {{- if .Paginator.HasPrev }}
+<link rel="prev" href="{{ .Paginator.Prev.URL | absURL }}">
+    {{- end }}
+    {{- if .Paginator.HasNext }}
+<link rel="next" href="{{ .Paginator.Next.URL | absURL }}">
+    {{- end }}
+  {{- end }}
+{{- end }}
+
+{{/* Favicon */}}
+{{- with site.Params.favicon }}
+<link rel="icon" href="{{ . }}">
+{{- end }}

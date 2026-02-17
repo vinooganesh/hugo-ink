@@ -1,0 +1,13 @@
+name = "Ink"
+license = "MIT"
+licenselink = "https://github.com/vinooganesh/hugo-ink/blob/main/LICENSE"
+description = "A minimal, blazing-fast Hugo blog theme. Self-hosted fonts, light/dark mode, sub-100KB page weight."
+homepage = "https://github.com/vinooganesh/hugo-ink"
+demosite = "https://vinooganesh.github.io/hugo-ink/"
+tags = ["responsive", "minimal", "clean", "light", "dark", "blog", "fast", "self-hosted-fonts"]
+features = ["responsive", "single-column", "blog", "light-dark-toggle", "self-hosted-fonts", "minified-assets", "seo"]
+min_version = "0.123.0"
+
+[author]
+  name = "Vinoo Ganesh"
+  homepage = "https://github.com/vinooganesh"

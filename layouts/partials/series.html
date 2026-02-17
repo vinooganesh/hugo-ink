@@ -1,0 +1,20 @@
+{{- with .Params.series }}
+{{- $series := . }}
+{{- $pages := where $.Site.RegularPages ".Params.series" $series }}
+{{- if gt (len $pages) 1 }}
+<nav class="series-nav" aria-label="Series navigation">
+  <p class="series-label">{{ i18n "series" | default "Series" }}: {{ $series }}</p>
+  <ol>
+    {{- range $pages.ByDate }}
+    <li{{ if eq $.Permalink .Permalink }} class="current"{{ end }}>
+      {{- if eq $.Permalink .Permalink }}
+      {{ .Title }}
+      {{- else }}
+      <a href="{{ .Permalink }}">{{ .Title }}</a>
+      {{- end }}
+    </li>
+    {{- end }}
+  </ol>
+</nav>
+{{- end }}
+{{- end }}

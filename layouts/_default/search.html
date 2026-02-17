@@ -1,0 +1,12 @@
+{{ define "main" }}
+
+<div class="search-page">
+  <h1 class="page-title">{{ .Title | default (i18n "search") | default "Search" }}</h1>
+  <input id="searchInput" autofocus placeholder="{{ i18n "search_placeholder" | default "Type to search..." }}" aria-label="{{ i18n "search" | default "Search" }}" type="search" autocomplete="off" maxlength="64">
+  <ul id="searchResults" class="post-list"></ul>
+  <noscript>
+    <p>{{ i18n "search_requires_js" | default "Search requires JavaScript to be enabled." }}</p>
+  </noscript>
+</div>
+
+{{ end }}

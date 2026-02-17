@@ -1,0 +1,35 @@
+{{ define "main" }} {{- if not .IsHome }}
+<h1 class="page-title">{{ .Title }}</h1>
+{{- end }}
+
+<ul class="post-list">
+    {{- range .Paginator.Pages }}
+    <li class="post-entry">
+        <a href="{{ .Permalink }}" class="post-entry-link">
+            <h2 class="post-entry-title">{{ .Title }}</h2>
+            {{ partial "post_meta.html" . }} {{- with .Description | default
+            .Summary }}
+            <p class="post-entry-summary">{{ . | plainify | truncate 160 }}</p>
+            {{- end }}
+        </a>
+    </li>
+    {{- end }}
+</ul>
+
+{{- $pag := .Paginator }} {{- if gt $pag.TotalPages 1 }}
+<nav class="pagination">
+    {{- if $pag.HasPrev }}
+    <a href="{{ $pag.Prev.URL }}">{{ i18n "prev" | default "← Prev" }}</a>
+    {{- else }}
+    <span class="disabled">{{ i18n "prev" | default "← Prev" }}</span>
+    {{- end }}
+
+    <span>{{ $pag.PageNumber }} / {{ $pag.TotalPages }}</span>
+
+    {{- if $pag.HasNext }}
+    <a href="{{ $pag.Next.URL }}">{{ i18n "next" | default "Next →" }}</a>
+    {{- else }}
+    <span class="disabled">{{ i18n "next" | default "Next →" }}</span>
+    {{- end }}
+</nav>
+{{- end }} {{ end }}

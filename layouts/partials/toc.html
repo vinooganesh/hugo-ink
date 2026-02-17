@@ -1,0 +1,6 @@
+{{- if .Params.ShowToc }}
+<details class="toc" {{ if .Params.TocOpen }} open{{ end }}>
+    <summary>{{ i18n "toc_title" | default "Table of Contents" }}</summary>
+    {{ .TableOfContents }}
+</details>
+{{- end }}
