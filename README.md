@@ -124,7 +124,7 @@ The minimum config to get a working site:
 
 ```toml
 baseURL = "https://example.com/"
-languageCode = "en-us"
+locale = "en-us"
 title = "My Site"
 theme = "ink"
 
@@ -150,7 +150,7 @@ All available options with comments:
 
 ```toml
 baseURL = "https://example.com/"
-languageCode = "en-us"
+locale = "en-us"
 title = "Your Name"
 theme = "ink"
 

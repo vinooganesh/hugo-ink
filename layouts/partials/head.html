@@ -18,7 +18,7 @@
 <link rel="canonical" href="{{ .Permalink }}">
 
 {{/* Robots */}}
-{{- if or .Params.draft (not hugo.IsProduction) }}
+{{- if or .Draft (not hugo.IsProduction) }}
 <meta name="robots" content="noindex, nofollow">
 {{- end }}
 
@@ -159,7 +159,7 @@
 {{- end }}
 
 {{/* Pagination rel links for SEO */}}
-{{- if and .IsNode (not .IsHome) }}
+{{- if and .IsBranch (not .IsHome) }}
   {{- if gt .Paginator.TotalPages 1 }}
     {{- if .Paginator.HasPrev }}
 <link rel="prev" href="{{ .Paginator.Prev.URL | absURL }}">
