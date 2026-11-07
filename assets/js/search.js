@@ -1,3 +1,5 @@
+import Fuse from "./vendor/fuse.basic.min.mjs";
+
 let fuse;
 let resList = document.getElementById("searchResults");
 let sInput = document.getElementById("searchInput");

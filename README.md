@@ -18,6 +18,7 @@ Built by [Vinoo Ganesh](https://vinoo.io) ([GitHub](https://github.com/vinoogane
 
 - Sub-100KB first page load — no CDN, no Google Fonts, no external requests
 - Flash-free light/dark mode with OS preference detection
+- Responsive WebP images with intrinsic dimensions (page bundles)
 - Self-hosted [Inter](https://rsms.me/inter/) font (Latin subset, ~76KB WOFF2 total)
 - Minified and fingerprinted assets with SRI hashes
 - No JavaScript frameworks — vanilla inline JS only
@@ -162,6 +163,7 @@ theme = "ink"
   homeBio = "I build things for the web and write about technology, design, and the craft of making software."
   homeImage = "/images/avatar.jpg"    # Avatar on homepage (place in static/images/, renders as 110px circle)
   favicon = "/favicon.ico"            # Place in static/
+  images = ["/images/og-default.png"] # Default Open Graph / Twitter Card image (used when a page has no cover)
   recentPostsCount = 3                # Posts shown on homepage (default: 3)
 
   # Social links — displayed in the homepage hero section
@@ -242,6 +244,7 @@ theme = "ink"
 | `homeBio` | string | — | Paragraph text on homepage |
 | `homeImage` | string | — | Avatar image path (110px circle) |
 | `favicon` | string | — | Favicon path |
+| `images` | array | — | Default social share image for pages without a `cover` |
 | `recentPostsCount` | int | `3` | Number of posts on homepage |
 | `socialLinks` | array | — | Social links in hero section |
 | `askAI` | array | Claude, ChatGPT, Perplexity | AI prompt buttons on homepage |
@@ -275,7 +278,7 @@ TocOpen: true              # TOC starts expanded (default: false)
 series: "My Series"        # Group posts into a navigable series
 searchHidden: true         # Exclude from search index (default: false)
 hidden: true               # Exclude from llms.txt (default: false)
-cover: "/images/cover.jpg" # Open Graph / Twitter Card image
+cover: "cover.jpg"         # Open Graph / Twitter Card image (page bundle file or site path)
 ---
 ```
 
@@ -292,7 +295,17 @@ cover: "/images/cover.jpg" # Open Graph / Twitter Card image
 | `series` | string | — | Series name for multi-part posts |
 | `searchHidden` | bool | `false` | Hide from search index |
 | `hidden` | bool | `false` | Hide from llms.txt |
-| `cover` | string | — | Image for Open Graph / Twitter Cards |
+| `cover` | string | — | Image for Open Graph / Twitter Cards (falls back to `params.images`) |
+
+### Images
+
+Images referenced in Markdown are processed automatically when they live in the post's page bundle (e.g. `content/posts/my-post/photo.jpg`) or in `assets/`:
+
+- Intrinsic `width`/`height` are emitted, so pages don't shift as images load
+- Responsive WebP variants (480, 680, 1360px) are served via `srcset`
+- Originals wider than 1360px are downscaled for the fallback `src`
+
+Remote images and files in `static/` are passed through unchanged.
 
 ### Special Pages
 
@@ -440,7 +453,7 @@ min_read:
 | Inter 400 (Latin WOFF2) | 37 KB |
 | Inter 700 (Latin WOFF2) | 38 KB |
 | Inline JS | ~2 KB |
-| Fuse.js (search page only) | 15.4 KB |
+| Search JS + Fuse.js (search page only) | ~21 KB |
 | **Homepage first load** | **~95 KB** |
 
 No external requests. No CDN. No Google Fonts. Everything is self-hosted.
