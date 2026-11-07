@@ -38,7 +38,7 @@ Built by [Vinoo Ganesh](https://vinoo.io) ([GitHub](https://github.com/vinoogane
 - Print stylesheet and `prefers-reduced-motion` support
 - Four responsive breakpoints
 
-> Requires Hugo **v0.123.0** or later (extended edition recommended)
+> Requires Hugo **v0.158.0** or later (extended edition recommended)
 
 ---
 

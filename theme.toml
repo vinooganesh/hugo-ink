@@ -6,7 +6,7 @@ homepage = "https://github.com/vinooganesh/hugo-ink"
 demosite = "https://vinooganesh.github.io/hugo-ink/"
 tags = ["responsive", "minimal", "clean", "light", "dark", "blog", "fast", "self-hosted-fonts"]
 features = ["responsive", "single-column", "blog", "light-dark-toggle", "self-hosted-fonts", "minified-assets", "seo"]
-min_version = "0.123.0"
+min_version = "0.158.0"
 
 [author]
   name = "Vinoo Ganesh"
