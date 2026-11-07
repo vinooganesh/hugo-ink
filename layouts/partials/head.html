@@ -95,18 +95,29 @@
 {{- else }}
 <meta property="og:type" content="website">
 {{- end }}
-{{- with .Params.cover }}
-<meta property="og:image" content="{{ . | absURL }}">
+{{- /* Share image: page cover, else site-wide default (params.images) */}}
+{{- $shareImage := "" }}
+{{- $imgSrc := .Params.cover | default site.Params.images }}
+{{- if reflect.IsSlice $imgSrc }}{{ $imgSrc = index $imgSrc 0 }}{{ end }}
+{{- with $imgSrc }}
+  {{- with $.Resources.Get . }}
+    {{- $shareImage = .Permalink }}
+  {{- else }}
+    {{- $shareImage = absURL . }}
+  {{- end }}
+{{- end }}
+{{- with $shareImage }}
+<meta property="og:image" content="{{ . }}">
 {{- end }}
 
 {{/* Twitter Cards */}}
-<meta name="twitter:card" content="summary">
+<meta name="twitter:card" content="{{ cond (ne $shareImage "") "summary_large_image" "summary" }}">
 <meta name="twitter:title" content="{{ $title }}">
 {{- with .Description | default site.Params.description }}
 <meta name="twitter:description" content="{{ . }}">
 {{- end }}
-{{- with .Params.cover }}
-<meta name="twitter:image" content="{{ . | absURL }}">
+{{- with $shareImage }}
+<meta name="twitter:image" content="{{ . }}">
 {{- end }}
 
 {{/* JSON-LD Structured Data */}}
@@ -147,9 +158,7 @@
 {{/* Search JS — only on search page */}}
 {{- if eq .Layout "search" -}}
 <link crossorigin="anonymous" rel="preload" as="fetch" href="../index.json">
-{{- $fusejs := resources.Get "js/fuse.basic.min.js" }}
-{{- $searchjs := resources.Get "js/search.js" | minify }}
-{{- $search := (slice $fusejs $searchjs) | resources.Concat "assets/js/search.js" | fingerprint }}
+{{- $search := resources.Get "js/search.js" | js.Build (dict "minify" true "format" "iife" "target" "es2018") | fingerprint }}
 <script defer crossorigin="anonymous" src="{{ $search.RelPermalink }}" integrity="{{ $search.Data.Integrity }}"></script>
 {{- end }}
 

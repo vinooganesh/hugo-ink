@@ -1,1 +1,50 @@
-<img src="{{ .Destination | safeURL }}" alt="{{ .Text }}" {{ with .Title }}title="{{ . }}"{{ end }} loading="lazy">
+{{- /*
+  Markdown image render hook.
+
+  - Images in the page bundle or in assets/ are processed: intrinsic
+    width/height are emitted (no layout shift) and responsive WebP
+    variants are generated at content-column widths.
+  - GIF/SVG resources are linked as-is (with dimensions when known).
+  - Remote images and files in static/ are passed through unchanged.
+*/ -}}
+{{- $u := urls.Parse .Destination -}}
+{{- $img := "" -}}
+{{- if not $u.IsAbs -}}
+  {{- $path := strings.TrimPrefix "./" $u.Path -}}
+  {{- with .PageInner.Resources.Get $path -}}
+    {{- $img = . -}}
+  {{- else -}}
+    {{- with resources.Get (strings.TrimPrefix "/" $path) -}}
+      {{- $img = . -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $alt := .PlainText -}}
+{{- $title := .Title -}}
+
+{{- if and $img (eq $img.ResourceType "image") (in (slice "jpeg" "png" "webp") $img.MediaType.SubType) -}}
+  {{- $widths := slice 480 680 1360 -}}
+  {{- $srcset := slice -}}
+  {{- $fallback := $img -}}
+  {{- range $widths -}}
+    {{- if le . $img.Width -}}
+      {{- $r := $img.Resize (printf "%dx webp" .) -}}
+      {{- $srcset = $srcset | append (printf "%s %dw" $r.RelPermalink $r.Width) -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if gt $img.Width 1360 -}}
+    {{- $fallback = $img.Resize "1360x" -}}
+  {{- end -}}
+<img src="{{ $fallback.RelPermalink }}"
+  {{- with $srcset }} srcset="{{ delimit . ", " }}" sizes="(max-width: 680px) 100vw, 680px"{{ end }}
+  width="{{ $fallback.Width }}" height="{{ $fallback.Height }}" alt="{{ $alt }}"
+  {{- with $title }} title="{{ . }}"{{ end }} loading="lazy" decoding="async">
+{{- else if $img -}}
+<img src="{{ $img.RelPermalink }}"
+  {{- if and (eq $img.ResourceType "image") (ne $img.MediaType.SubType "svg") }} width="{{ $img.Width }}" height="{{ $img.Height }}"{{ end }}
+  alt="{{ $alt }}"{{ with $title }} title="{{ . }}"{{ end }} loading="lazy" decoding="async">
+{{- else -}}
+<img src="{{ .Destination | safeURL }}" alt="{{ $alt }}"
+  {{- with $title }} title="{{ . }}"{{ end }} loading="lazy" decoding="async">
+{{- end -}}
